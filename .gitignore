@@ -1,0 +1,25 @@
+# emacs!
+*~
+
+# top level directory/file that must be ignored to keep my eyes clean.
+# initial ignored until I added manually.
+bin
+boot
+dev
+etc
+home
+host
+initrd.img
+lib
+lib64
+opt
+proc
+proto
+root
+run
+sbin
+sys
+tmp
+usr
+var
+vmlinuz
