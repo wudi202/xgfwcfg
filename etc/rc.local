@@ -1,0 +1,52 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+logger "start vpp & vedge"
+# start vpp & vedge
+mkdir -p /var/log/redis
+systemctl restart redis-server
+modprobe igb_uio
+systemctl restart vpp
+sleep 10
+systemctl restart vedge
+
+logger "conf mgmt interface"
+
+# ovs should up now.
+
+# enp1s0 -> to the switch inside the weak battery box (1Gbps)
+# enp3s0 -> to the trunk port between the box and living room switch. (100Mbps)
+# enp4s0 -> to the modem itv port (100Mbps)
+ip link set enp1s0 up
+ip link set enp3s0 up
+ip link set enp4s0 up
+ip link set itvbr up
+ip addr add 192.168.99.133/24 dev itvbr
+ovs-ofctl replace-flows itvbr /opt/itvbr.flows -O openflow13
+
+logger "start ssr&ovpn&unbound services"
+
+# launch ssr
+systemctl restart kcptun4501
+systemctl restart kcptun4502
+systemctl restart kcptun4594
+
+# launch ovpn client
+# use systemd to launch.
+systemctl restart openvpn@4nian
+
+# launch unbound dns
+systemctl start unbound
+
+exit 0
+
