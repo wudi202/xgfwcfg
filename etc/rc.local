@@ -32,7 +32,19 @@ ip link set enp3s0 up
 ip link set enp4s0 up
 ip link set itvbr up
 ip addr add 192.168.99.133/24 dev itvbr
+ip link add itv type veth peer name itvp
+# addr must match with /etc/dhclient/itv
+ip link set itv addr f4:4c:70:25:5f:79
+ip link set itv up
+ip link set itvp up
+# ovs will auto bring the itvp, then the flow ok now. 
 ovs-ofctl replace-flows itvbr /opt/itvbr.flows -O openflow13
+# start dhcp for faking itv port.
+dhclient -cf /etc/dhcp/itv.conf
+# masq for all our lan addresses.
+iptables -t nat -A POSTROUTING -o itv -j MASQUERADE
+# 要想让rtsp工作，需要安装nat-rtsp-dkms包的支持
+modprobe nf_nat_rtsp
 
 logger "start ssr&ovpn&unbound services"
 
@@ -44,6 +56,12 @@ systemctl restart kcptun4594
 # launch ovpn client
 # use systemd to launch.
 systemctl restart openvpn@4nian
+
+# launch wireguard tunnel, may be it's better than ovpn and we can switch to it.
+ip link add dev wg0 type wireguard
+wg set wg0 listen-port 8501 private-key /opt/wg/szrr_client.key peer 3hmsXgfgM/PNR1WN0+V/Yh7lZC+uOnHTf1PrccbJR38= allowed-ips 192.168.99.0/24 endpoint www.4nian.com:8501
+ip address add dev wg0 169.254.88.3/24
+ip link set up dev wg0
 
 # launch unbound dns
 systemctl start unbound

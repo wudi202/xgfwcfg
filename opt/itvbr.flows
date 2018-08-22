@@ -1,9 +1,13 @@
-priority=6000,in_port=3,dl_vlan=43 actions=output:2
-priority=6000,in_port=2,dl_vlan=43,dl_src=f4:4c:70:25:5f:78 actions=output:3
-priority=5000,in_port=1,actions=resubmit(,100)
-priority=5000,in_port=2,actions=resubmit(,100)
-priority=5000,in_port=LOCAL,actions=resubmit(,100)
+priority=6000,in_port=3,actions=resubmit(,200)
+priority=6000,in_port=5,actions=resubmit(,200)
+priority=6000,in_port=2,dl_src=f4:4c:70:25:5f:78 actions=resubmit(,200)
+priority=4000,in_port=1,actions=resubmit(,100)
+priority=4000,in_port=2,actions=resubmit(,100)
+priority=4000,in_port=LOCAL,actions=resubmit(,100)
 priority=1 actions=drop
-table=100,priority=5000,dl_dst=01:00:00:00:00:00/01:00:00:00:00:00,actions=learn(table=200,priority=5000,NXM_OF_ETH_DST[]=NXM_OF_ETH_SRC[],output:NXM_OF_IN_PORT[]),output:1,output:2,output:LOCAL
-table=100,priority=5000,dl_dst=00:00:00:00:00:00/01:00:00:00:00:00,actions=learn(table=200,priority=5000,NXM_OF_ETH_DST[]=NXM_OF_ETH_SRC[],output:NXM_OF_IN_PORT[]),resubmit(,200)
-table=200 priority=1,actions=drop
+table=100,priority=5000,dl_dst=01:00:00:00:00:00/01:00:00:00:00:00,actions=learn(table=110,priority=5000,NXM_OF_ETH_DST[]=NXM_OF_ETH_SRC[],output:NXM_OF_IN_PORT[]),output:1,output:2,output:LOCAL
+table=100,priority=5000,dl_dst=00:00:00:00:00:00/01:00:00:00:00:00,actions=learn(table=110,priority=5000,NXM_OF_ETH_DST[]=NXM_OF_ETH_SRC[],output:NXM_OF_IN_PORT[]),resubmit(,110)
+table=110 priority=1,actions=drop
+table=200 priority=5000,dl_dst=01:00:00:00:00:00/01:00:00:00:00:00,actions=learn(table=210,priority=5000,NXM_OF_ETH_DST[]=NXM_OF_ETH_SRC[],output:NXM_OF_IN_PORT[]),output:2,output:3,output:5
+table=200 priority=5000,dl_dst=00:00:00:00:00:00/01:00:00:00:00:00,actions=learn(table=210,priority=5000,NXM_OF_ETH_DST[]=NXM_OF_ETH_SRC[],output:NXM_OF_IN_PORT[]),resubmit(,210)
+table=210 priority=1,actions=drop

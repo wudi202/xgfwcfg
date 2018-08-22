@@ -1,0 +1,2 @@
+logger -t "add route for itv media"
+ip route add 180.100.0.0/16 via 10.146.88.1
