@@ -25,8 +25,10 @@ logger "conf mgmt interface"
 # ovs should up now.
 
 # enp1s0 -> to the switch inside the weak battery box (1Gbps)
-# enp3s0 -> to the trunk port between the box and living room switch. (100Mbps)
-# enp4s0 -> to the modem itv port (100Mbps)
+# enp3s0 -> to the trunk port between the box and living room switch. (1Gbps)
+# enp4s0 -> to the modem itv port (100Mbps), itv dhcp only need to live in the vedge
+# itself (means this device), no need to share to living room itv box, we use nat &
+# pbr to do that.
 ip link set enp1s0 up
 ip link set enp3s0 up
 ip link set enp4s0 up
@@ -45,6 +47,11 @@ dhclient -cf /etc/dhcp/itv.conf
 iptables -t nat -A POSTROUTING -o itv -j MASQUERADE
 # 要想让rtsp工作，需要安装nat-rtsp-dkms包的支持
 modprobe nf_nat_rtsp
+# itv看起来无法多播，手工配置itv为家里内网ip，
+# 用pbr来使得itv固定走itv口转发，这样应该可以
+# 访问itv平台，回看等功能应该可用了。
+ip rule add from 192.168.99.84 table 100
+ip route add table 100 default via 10.146.88.1
 
 logger "start ssr&ovpn&unbound services"
 
