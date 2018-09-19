@@ -13,4 +13,7 @@ https://bgp.he.net/AS32934#_prefixes
 fastly routes:
 https://bgp.he.net/AS54113
 
+softlayer(twitter using) routes:
+https://bgp.he.net/AS36351#_prefixes
+
 combine many as routes to the file.

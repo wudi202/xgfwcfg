@@ -63,18 +63,19 @@ systemctl restart kcptun4594
 # launch ovpn client
 # use systemd to launch.
 # switch to wg.
-#systemctl restart openvpn@4nian
+systemctl restart openvpn@4nian
 
+# wg seems to be blocked by gfw.
 # launch wireguard tunnel, may be it's better than ovpn and we can switch to it.
-ip link add dev wg0 type wireguard
+#ip link add dev wg0 type wireguard
 # use systemd to drive the service.
 #wg set wg0 listen-port 8501 private-key /opt/wg/szrr_client.key peer 3hmsXgfgM/PNR1WN0+V/Yh7lZC+uOnHTf1PrccbJR38= allowed-ips 0.0.0.0/0 endpoint www.4nian.com:8501
-ip address add dev wg0 169.254.88.3/24
-ip link set up dev wg0
+#ip address add dev wg0 169.254.88.3/24
+#ip link set up dev wg0
 # program routes through wg0
-pushd /etc/openvpn
-/etc/openvpn/vpnroutes.sh wg0
-popd
+#pushd /etc/openvpn
+#/etc/openvpn/vpnroutes.sh wg0
+#popd
 
 # launch unbound dns
 systemctl start unbound
